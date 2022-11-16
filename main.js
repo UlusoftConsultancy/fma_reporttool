@@ -3,12 +3,16 @@ import * as Lib from './lib.js';
 // global error state
 let globalErrorState = true;
 let globalDataStdClass;
+let globalApkDataFiles = [];
+let globalFmaDataFile = '';
 
 // bind onchange events of file upload inputs
 $('#file-apk-dmu').change(function(e)
 {
     let file = e.target.files[0];
-    
+    const filepath = $(this).val();
+    const filename = filepath.split('\\').pop();
+
     // check if the file is an excel workbench
     if (file.name.split('.').pop() !== 'xlsx')
     {
@@ -17,7 +21,7 @@ $('#file-apk-dmu').change(function(e)
     }
 
     let formData = new FormData();
-    formData.append('filename', 'tmpApk');
+    formData.append('filename', filename);
      
     formData.append("sheet", file);
     $.ajax({ url: 'upload.php', method: 'post', data: formData, processData: false, contentType: false }).then(function(e) 
@@ -26,6 +30,16 @@ $('#file-apk-dmu').change(function(e)
         $('#file-name-apk').html(response.message); 
 
         globalErrorState = response.errorcode;
+        if (!globalErrorState)
+        {
+            $('#apk-dmu-tag').css('display', 'none');
+            $('#apk-dmu-tagbox').append(`<span class="tag is-primary is-light" style="margin:0 10px 0 0;">${ filepath }</span>`);
+            globalApkDataFiles.push(filename);
+        }
+        else
+        {
+            $('#apk-dmu-tag').css('display', 'inline');
+        }
     });
 });
 
@@ -33,7 +47,9 @@ $('#file-apk-dmu').change(function(e)
 $('#file-fma-dmu').change(function(e)
 {
     let file = e.target.files[0];
-    
+    const filepath = $(this).val();
+    const filename = filepath.split('\\').pop();
+
     // check if the file is an excel workbench
     if (file.name.split('.').pop() !== 'xlsx')
     {
@@ -42,7 +58,7 @@ $('#file-fma-dmu').change(function(e)
     }
 
     let formData = new FormData();
-    formData.append('filename', 'tmpFma');
+    formData.append('filename', filename);
      
     formData.append("sheet", file);
     $.ajax({ url: 'upload.php', method: 'post', data: formData, processData: false, contentType: false }).then(function(e) 
@@ -51,6 +67,17 @@ $('#file-fma-dmu').change(function(e)
         $('#file-name-fma').html(response.message);      
 
         globalErrorState = response.errorcode;
+        if (!globalErrorState)
+        {
+            $('#fma-dmu-tag').css('display', 'none');
+            $('#fma-dmu-tag-file').css('display', 'inline');
+            $('#fma-dmu-tag-file').html(`${ filepath }`);
+            globalFmaDataFile = filename;
+        }
+        else
+        {
+            $('#fma-dmu-tag').css('display', 'inline');
+        }
     });
 });
 
@@ -59,7 +86,7 @@ $('#button-generate-report').click(function(e)
 {
     if (!globalErrorState)
     {
-        $.ajax({ url: 'process.php', method: 'get' }).then(function(response) 
+        $.ajax({ url: 'process.php', method: 'post', data: { apkData: globalApkDataFiles, fmaData: globalFmaDataFile } }).then(function(response) 
         { 
             globalDataStdClass = response;
             const data = JSON.parse(response);
@@ -68,6 +95,7 @@ $('#button-generate-report').click(function(e)
                 $('#table-report-body').append(`
                     <tr>
                         <td>${ element.keyApk }</td>
+                        <td>${ element.nameApk }</td>
                         <td>${ element.keyFma }</td>
                         <td>${ element.date }</td>
                         <td>${ element.value }</td>

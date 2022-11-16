@@ -26,7 +26,7 @@
         // execute the upload
         if ($uploadOK)
         {
-            $target_file = 'assets/' . $_POST['filename'] . '.xlsx';
+            $target_file = 'assets/' . $_POST['filename'];
             if (move_uploaded_file($_FILES["sheet"]["tmp_name"], $target_file)) 
             {
                 $message .= "Success: ". htmlspecialchars( basename( $_FILES["sheet"]["name"])). " werd geupload.";

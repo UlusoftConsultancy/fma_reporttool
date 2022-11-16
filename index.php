@@ -48,9 +48,9 @@
                     </span>
                 </label>
             </div>
-            <div class="box">
+            <div id="apk-dmu-tagbox" class="box">
                 <h4 class="title is-4">Excel files Apk</h4>
-                <span class="tag is-danger is-light">Nog geen excel toegevoegd</span>
+                <span id="apk-dmu-tag" class="tag is-danger is-light">Nog geen excel toegevoegd</span>
             </div>
             <div class="file has-name m-1">
                 <label class="file-label">
@@ -68,9 +68,10 @@
                     </span>
                 </label>
             </div>
-            <div class="box">
+            <div id="fma-dmu-tagbox" class="box">
                 <h4 class="title is-4">Excel files Fma</h4>
-                <span class="tag is-danger is-light">Nog geen excel toegevoegd</span>
+                <span id="fma-dmu-tag" class="tag is-danger is-light">Nog geen excel toegevoegd</span>
+                <span id="fma-dmu-tag-file" class="tag is-primary is-light" style="display:none;"></span>
             </div>
         </section>
 
@@ -84,6 +85,7 @@
                     <thead>
                         <tr>
                             <th>Excel key Apk</th>
+                            <th>Excel file Apk</th>
                             <th>Excel key Fma</th>
                             <th>Datum</th>
                             <th>Order nr.</th>
