@@ -1,5 +1,6 @@
 // global error state
 let globalErrorState = true;
+let globalDataStdClass;
 
 // bind onchange events of file upload inputs
 $('#file-apk-dmu').change(function(e)
@@ -58,6 +59,7 @@ $('#button-generate-report').click(function(e)
     {
         $.ajax({ url: 'process.php', method: 'get' }).then(function(response) 
         { 
+            globalDataStdClass = response;
             const data = JSON.parse(response);
             data.forEach(function(element)
             {
@@ -67,10 +69,26 @@ $('#button-generate-report').click(function(e)
                         <td>${ element.keyFma }</td>
                         <td>${ element.date }</td>
                         <td>${ element.value }</td>
-                        <td>${ element.status }</td>
+                        <td style="color:${ element.status[0] === 'C' ? "#008000" : "#ff0000" };font-weight:bold;">${ element.status }</td>
                     </tr>
                 `);
             });
+        });
+    }
+    else
+    {
+        alert ('Error: zijn alle files geuploaded?');
+    }
+});
+
+// bind click event of download button to execute report to sheet and download scripts
+$('#button-download-report').click(function()
+{
+    if (!globalErrorState)
+    {
+        $.ajax({ url: 'reportsheet.php', method: 'post', data: { 'data': globalDataStdClass } }).then(function(response) 
+        { 
+            console.log(response);
         });
     }
     else

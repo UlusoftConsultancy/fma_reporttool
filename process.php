@@ -69,11 +69,11 @@
         $foundInApk = array_search($filteredOrdersFma[$index], $ordersApk);
         if ($foundInApk !== false)
         {
-            $report[] = array('keyApk' => $foundInApk, 'keyFma' => $minDateIndexFma + $index, 'date' => $datesFma[$minDateIndexFma + $index], 'value' => $ordersApk[$foundInApk], 'status' => 'CORRECT');
+            $report[] = array('keyApk' => $foundInApk, 'keyFma' => $minDateIndexFma + $index, 'date' => $datesFma[$minDateIndexFma + $index], 'value' => strval($ordersApk[$foundInApk]), 'status' => 'CORRECT');
         }
         else
         {
-            $report[] = array('keyApk' => -1, 'keyFma' => $minDateIndexFma + $index, 'date' => $datesFma[$minDateIndexFma + $index], 'value' => $filteredOrdersFma[$index], 'status' => 'ONTBREEKT');
+            $report[] = array('keyApk' => -1, 'keyFma' => $minDateIndexFma + $index, 'date' => $datesFma[$minDateIndexFma + $index], 'value' => strval($filteredOrdersFma[$index]), 'status' => 'ONTBREEKT');
         }
     }
 
