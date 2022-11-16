@@ -1,3 +1,5 @@
+import * as Lib from './lib.js';
+
 // global error state
 let globalErrorState = true;
 let globalDataStdClass;
@@ -88,7 +90,8 @@ $('#button-download-report').click(function()
     {
         $.ajax({ url: 'reportsheet.php', method: 'post', data: { 'data': globalDataStdClass } }).then(function(response) 
         { 
-            console.log(response);
+            // file is ready for download
+            Lib.download('assets/reports/raport_apk_dmu.xlsx', 'raport_apk_dmu.xlsx');
         });
     }
     else
