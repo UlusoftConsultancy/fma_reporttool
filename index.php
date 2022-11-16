@@ -48,6 +48,10 @@
                     </span>
                 </label>
             </div>
+            <div class="box">
+                <h4 class="title is-4">Excel files Apk</h4>
+                <span class="tag is-danger is-light">Nog geen excel toegevoegd</span>
+            </div>
             <div class="file has-name m-1">
                 <label class="file-label">
                     <input id="file-fma-dmu" class="file-input" type="file" name="resume">
@@ -63,6 +67,10 @@
                         Upload bestand...
                     </span>
                 </label>
+            </div>
+            <div class="box">
+                <h4 class="title is-4">Excel files Fma</h4>
+                <span class="tag is-danger is-light">Nog geen excel toegevoegd</span>
             </div>
         </section>
 
