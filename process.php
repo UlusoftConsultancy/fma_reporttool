@@ -14,7 +14,7 @@
         $spreadsheetApk[] = $reader->load('assets/' . $spreadsheetApkData[$index]);
     
     // load dmu sheet from fma
-    $sheetFma = $spreadsheetFma->getSheetByName('fma')->toArray();
+    $sheetFma = $spreadsheetFma->getSheetByName('Alle Prestaties')->toArray();
 
     // load dmu sheets from apk files
     $sheetApk = array(); 
