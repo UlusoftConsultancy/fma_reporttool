@@ -8,7 +8,11 @@ $apk_files = scandir('./assets/excels/apk', SCANDIR_SORT_ASCENDING);
 // filter out . and .., assuming the rest are excel files!
 $apk_files = array_filter($apk_files, function($el) { return strlen($el) > 3; });
 
+$apkId_files = scandir('./assets/excels/indienstelling', SCANDIR_SORT_ASCENDING);
+// filter out . and .., assuming the rest are excel files!
+$apkId_files = array_filter($apkId_files, function($el) { return strlen($el) > 3; });
+
 // 
-echo json_encode(array('fma' => array_values($fma_files), 'apk' => array_values($apk_files)));
+echo json_encode(array('fma' => array_values($fma_files), 'apk' => array_values($apk_files), 'apkId' => array_values($apkId_files)));
 
 ?>

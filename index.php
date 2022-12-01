@@ -32,13 +32,17 @@
         <section class="section">
             <h1 class="title">Overzicht Excel Files<img id="excel-loader" src="assets/png/loader.gif" style="width:25px;margin:0 0 0 1em;"/></h1>
             <h2 class="subtitle">Alle excel files die onder de /assets/excels folder gevonden zijn.</h2>
+            <div id="fma-dmu-tagbox" class="box">
+                <h4 class="title is-4">Excel files Fma</h4>
+                <span id="fma-dmu-tag" class="tag is-danger is-light">Geen excels gevonden</span>
+            </div>
             <div id="apk-dmu-tagbox" class="box">
                 <h4 class="title is-4">Excel files Apk</h4>
                 <span id="apk-dmu-tag" class="tag is-danger is-light">Geen excels gevonden</span>
             </div>
-            <div id="fma-dmu-tagbox" class="box">
-                <h4 class="title is-4">Excel files Fma</h4>
-                <span id="fma-dmu-tag" class="tag is-danger is-light">Geen excels gevonden</span>
+            <div id="apkId-dmu-tagbox" class="box">
+                <h4 class="title is-4">Excel files indienstelling</h4>
+                <span id="apkId-dmu-tag" class="tag is-danger is-light">Geen excels gevonden</span>
             </div>
         </section>
 
