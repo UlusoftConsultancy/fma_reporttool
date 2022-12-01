@@ -30,52 +30,27 @@
         </nav>
 
         <section class="section">
-            <h1 class="title">Upload Excels</h1>
-            <h2 class="subtitle">Laad de te vergelijken Excel files in de applicatie zodat de vergelijking geraporteerd kan worden.</h2>
-            <div class="file has-name mg-small m-1">
-                <label class="file-label">
-                    <input id="file-apk-dmu" class="file-input" type="file" name="resume">
-                    <span class="file-cta">
-                        <span class="file-icon">
-                            <i class="fas fa-upload"></i>
-                        </span>
-                        <span class="file-label">
-                            APK DMU
-                        </span>
-                    </span>
-                    <span id="file-name-apk" class="file-name">
-                        Upload bestand...
-                    </span>
-                </label>
-            </div>
+            <h1 class="title">Overzicht Excel Files</h1>
+            <h2 class="subtitle">Alle excel files die onder de /assets/excels folder gevonden zijn.</h2>
             <div id="apk-dmu-tagbox" class="box">
                 <h4 class="title is-4">Excel files Apk</h4>
-                <span id="apk-dmu-tag" class="tag is-danger is-light">Nog geen excel toegevoegd</span>
-            </div>
-            <div class="file has-name m-1">
-                <label class="file-label">
-                    <input id="file-fma-dmu" class="file-input" type="file" name="resume">
-                    <span class="file-cta">
-                        <span class="file-icon">
-                            <i class="fas fa-upload"></i>
-                        </span>
-                        <span class="file-label">
-                            FMA DMU
-                        </span>
-                    </span>
-                    <span id="file-name-fma" class="file-name">
-                        Upload bestand...
-                    </span>
-                </label>
+                <span id="apk-dmu-tag" class="tag is-danger is-light">Geen excels gevonden</span>
             </div>
             <div id="fma-dmu-tagbox" class="box">
                 <h4 class="title is-4">Excel files Fma</h4>
-                <span id="fma-dmu-tag" class="tag is-danger is-light">Nog geen excel toegevoegd</span>
-                <span id="fma-dmu-tag-file" class="tag is-primary is-light" style="display:none;"></span>
+                <span id="fma-dmu-tag" class="tag is-danger is-light">Geen excels gevonden</span>
             </div>
         </section>
 
-        <section class="section">
+        <section id="file-loader" class="section">
+            <div class="columns is-centered">
+                <div class="column is-one-quarter">
+                    <img src="assets/png/loader.gif"/>
+                </div>
+            </div>
+        </section>
+
+        <section id="report-section" class="section" style="visibility: hidden;">
             <h1 class="title">Rapport</h1>
             <h2 class="subtitle">Order nummers worden vergeleken en geraporteerd</h2>
             <button id="button-generate-report" class="button is-light">Genereer raport</button>
