@@ -3,18 +3,19 @@
     require 'vendor/autoload.php';
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
-    // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+    $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 
-    // $spreadsheetFma = $reader->load('assets/' . $_POST['fmaData']);
-    // $spreadsheetApk = array();
+    $fmaFile = $_POST['fmaData'][0];
+    $spreadsheetFma = $reader->load('assets/excels/apk/Detail - FMA Services - 08 2022 (13-08-2022 t.e.m. 31-08-2022).xlsx');
+    $spreadsheetApk = array();
     
     // // load all the apk data files
     // $spreadsheetApkData = $_POST['apkData']; // filenames
     // for ($index = 0; $index < count($spreadsheetApkData); $index++)
-    //     $spreadsheetApk[] = $reader->load('assets/' . $spreadsheetApkData[$index]);
+    //     $spreadsheetApk[] = $reader->load('assets/excels/apk/' . $spreadsheetApkData[$index]);
     
-    // // load dmu sheet from fma
-    // $sheetFma = $spreadsheetFma->getSheetByName('Alle Prestaties')->toArray();
+    // load dmu sheet from fma
+    //$sheetFma = $spreadsheetFma->getSheetByName('Alle Prestaties')->toArray();
 
     // // load dmu sheets from apk files
     // $sheetApk = array(); 

@@ -2,48 +2,53 @@ import * as Lib from './lib.js';
 
 // global error state
 let globalDataStdClass;
+let globalFmaFiles;
+let globalApkFiles;
 
 // load excel files and enable reporting in front end
 $.ajax({ url: 'loadfiles.php', method: 'get' }).then(function(response)
 {
-    $('#file-loader').css('display', 'none');
-    $('#report-section').css('visibility', 'visible');
-
     const files = JSON.parse(response);
     if (files.fma.length > 0)
         $('#fma-dmu-tag').remove();
 
-    files.fma.forEach(function(file) { $('#fma-dmu-tagbox').append(`<span class="tag is-primary is-light">${ file }</span>`); });
+    globalFmaFiles = files.fma;
+    files.fma.forEach(function(file) { $('#fma-dmu-tagbox').append(`<span class="tag is-primary is-light" style="margin: 0 10px 0 0;">${ file }</span>`); });
 
     if (files.apk.length > 0)
         $('#apk-dmu-tag').remove();
 
-    files.apk.forEach(function(file) { $('#apk-dmu-tagbox').append(`<span class="tag is-primary is-light">${ file }</span>`); });
+    globalApkFiles = files.apk;
+    files.apk.forEach(function(file) { $('#apk-dmu-tagbox').append(`<span class="tag is-primary is-light" style="margin: 0 10px 0 0;">${ file }</span>`); });
 
+    if (globalFmaFiles.length > 0 && globalApkFiles.length > 0)
+    {
+        $('#file-loader').css('display', 'none');
+        $('#report-section').css('visibility', 'visible');
+    }
 });
 
 // bind click event of report button to execute process script
 $('#button-generate-report').click(function(e)
 {
-    $.ajax({ url: 'process.php', method: 'get' }).then(function(response) 
+    $.ajax({ url: 'fma_process.php', method: 'post', data: { fmaData: globalFmaFiles } }).then(function(response) 
     { 
-        console.log(response);
-        // globalDataStdClass = response;
-        // const data = JSON.parse(response);
-        // data.forEach(function(element)
-        // {
-        //     $('#table-report-body').append(`
-        //         <tr>
-        //             <td>${ element.keyApk }</td>
-        //             <td>${ element.nameApk }</td>
-        //             <td>${ element.keyFma }</td>
-        //             <td>${ element.date }</td>
-        //             <td>${ element.value }</td>
-        //             <td style="color:${ element.status[0] === 'C' ? "#008000" : "#ff0000" };font-weight:bold;">${ element.status }</td>
-        //         </tr>
-        //     `);
-        // });
+        globalDataStdClass = response;
+        const data = JSON.parse(response);
+        for (let index = 0; index < data.fk_fma.length; index++)
+        {
+            $('#table-report-body').append(`
+                <tr>
+                    <td>${ data.fk_fma[index] }</td>
+                    <td>${ data.date[index] }</td>
+                    <td>${ data.ordernr[index] }</td>
+                </tr>
+            `);
+        }
+        console.log(data);
     });
+
+    // <td style="color:${ element.status[0] === 'C' ? "#008000" : "#ff0000" };font-weight:bold;">${ element.status }</td>
 });
 
 // bind click event of download button to execute report to sheet and download scripts

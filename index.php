@@ -59,12 +59,9 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Excel key Apk</th>
-                            <th>Excel file Apk</th>
                             <th>Excel key Fma</th>
                             <th>Datum</th>
                             <th>Order nr.</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody id="table-report-body">
