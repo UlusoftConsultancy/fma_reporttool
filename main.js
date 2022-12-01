@@ -23,7 +23,7 @@ $.ajax({ url: 'loadfiles.php', method: 'get' }).then(function(response)
 
     if (globalFmaFiles.length > 0 && globalApkFiles.length > 0)
     {
-        $('#file-loader').css('display', 'none');
+        $('#excel-loader').css('display', 'none');
         $('#report-section').css('visibility', 'visible');
     }
 });
@@ -31,9 +31,14 @@ $.ajax({ url: 'loadfiles.php', method: 'get' }).then(function(response)
 // bind click event of report button to execute process script
 $('#button-generate-report').click(function(e)
 {
+    $('#report-loader').css('visibility', 'visible');
+    $('#report-status').css('visibility', 'visible');
+    $('#report-status').html('Fma excel wordt opgeladen en geanalyseerd');
     $.ajax({ url: 'fma_process.php', method: 'post', data: { fmaData: globalFmaFiles } }).then(function(response) 
     { 
         globalDataStdClass = response;
+        
+        // load fma onto table
         const data = JSON.parse(response);
         for (let index = 0; index < data.fk_fma.length; index++)
         {
@@ -42,10 +47,26 @@ $('#button-generate-report').click(function(e)
                     <td>${ data.fk_fma[index] }</td>
                     <td>${ data.date[index] }</td>
                     <td>${ data.ordernr[index] }</td>
+                    <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
+                    <td fk-actionstatus="${ data.ordernr[index] }">
+                        <div class="select">
+                            <select>
+                                <option value="1" style="color:red;">NAZIEN</option>
+                                <option value="2" style="color:orange;">VERSTUURD</option>
+                                <option value="3" style="color:green;">OK</option>
+                            </select>
+                        </div>
+                    </td>
                 </tr>
             `);
         }
-        console.log(data);
+
+        $('#report-loader').css('visibility', 'hidden');
+        $('#report-status').html('');
+        $('#report-status').css('visibility', 'hidden');
+
+        // continue analysis
+
     });
 
     // <td style="color:${ element.status[0] === 'C' ? "#008000" : "#ff0000" };font-weight:bold;">${ element.status }</td>
