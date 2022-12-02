@@ -32,6 +32,46 @@ $.ajax({ url: 'loadfiles.php', method: 'get' }).then(function(response)
     $('#report-section').css('visibility', 'visible');
 });
 
+// load database tables and update front-end
+$('#report-loader').css('visibility', 'visible');
+$('#report-status').css('visibility', 'visible');
+$('#report-status').html('Fma data wordt opgeladen van de database en gesynchroniseerd');
+$.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response) 
+{ 
+    globalFmaDataStdClass = response;
+    
+    // load fma onto table
+    const data = JSON.parse(response);
+    for (let index = 0; index < data.fk_fma.length; index++)
+    {
+        console.log(data.date[index]);
+        $('#table-report-body').append(`
+            <tr>
+                <td>${ data.fk_fma[index] }</td>
+                <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
+                <td>${ data.ordernr[index] }</td>
+                <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
+                <td fk-actionstatus="${ data.ordernr[index] }">
+                    <div class="select">
+                        <select>
+                            <option value="1" style="color:red;">NAZIEN</option>
+                            <option value="2" style="color:orange;">VERSTUURD</option>
+                            <option value="3" style="color:green;">OK</option>
+                        </select>
+                    </div>
+                </td>
+            </tr>
+        `);
+    }
+
+    $('#report-loader').css('visibility', 'hidden');
+    $('#report-status').html('');
+    $('#report-status').css('visibility', 'hidden');
+
+    // continue analysis
+    analyseApkFiles();
+});
+
 // search through apkId files and analyse them
 
 // search through a single apk file and analyse it
@@ -77,38 +117,38 @@ async function analyseApkFiles()
 }
 
 // bind click event of report button to execute process script
-$('#button-generate-report').click(function(e)
+$('#button-synchronize-report').click(function(e)
 {
     $('#report-loader').css('visibility', 'visible');
     $('#report-status').css('visibility', 'visible');
-    $('#report-status').html('Fma excel wordt opgeladen en geanalyseerd');
+    $('#report-status').html('Fma excel wordt opgeladen en gesynchroniseerd');
     $.ajax({ url: 'fma_process.php', method: 'post', data: { fmaData: globalFmaFiles } }).then(function(response) 
     { 
         globalFmaDataStdClass = response;
         
-        // load fma onto table
-        const data = JSON.parse(response);
-        for (let index = 0; index < data.fk_fma.length; index++)
-        {
-            console.log(data.date[index]);
-            $('#table-report-body').append(`
-                <tr>
-                    <td>${ data.fk_fma[index] }</td>
-                    <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
-                    <td>${ data.ordernr[index] }</td>
-                    <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
-                    <td fk-actionstatus="${ data.ordernr[index] }">
-                        <div class="select">
-                            <select>
-                                <option value="1" style="color:red;">NAZIEN</option>
-                                <option value="2" style="color:orange;">VERSTUURD</option>
-                                <option value="3" style="color:green;">OK</option>
-                            </select>
-                        </div>
-                    </td>
-                </tr>
-            `);
-        }
+        // // load fma onto table
+        // const data = JSON.parse(response);
+        // for (let index = 0; index < data.fk_fma.length; index++)
+        // {
+        //     console.log(data.date[index]);
+        //     $('#table-report-body').append(`
+        //         <tr>
+        //             <td>${ data.fk_fma[index] }</td>
+        //             <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
+        //             <td>${ data.ordernr[index] }</td>
+        //             <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
+        //             <td fk-actionstatus="${ data.ordernr[index] }">
+        //                 <div class="select">
+        //                     <select>
+        //                         <option value="1" style="color:red;">NAZIEN</option>
+        //                         <option value="2" style="color:orange;">VERSTUURD</option>
+        //                         <option value="3" style="color:green;">OK</option>
+        //                     </select>
+        //                 </div>
+        //             </td>
+        //         </tr>
+        //     `);
+        // }
 
         $('#report-loader').css('visibility', 'hidden');
         $('#report-status').html('');

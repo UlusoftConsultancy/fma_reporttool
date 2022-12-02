@@ -53,7 +53,7 @@
                 <span id="report-status" class="tag is-warning" style="visibility:hidden;"></span>
             </h1>
             <h2 class="subtitle">Order nummers worden vergeleken en geraporteerd</h2>
-            <button id="button-generate-report" class="button is-light">Genereer raport</button>
+            <button id="button-synchronize-report" class="button is-light">Synchroniseer rapport</button>
             <button id="button-download-report" class="button is-light">Download raport</button>
             <div class="content m-1">
                 <table>

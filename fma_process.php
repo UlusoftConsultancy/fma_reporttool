@@ -39,10 +39,16 @@ for ($row = 1; $row <= $highestRow; $row++)
     }
 }
 
-// for ($index = 0; $index < count($masterData['fk_fma']); $index++)
-// {
-//     $query = 'INSERT IGNORE INTO apk_dmu_rapportage (fk_fma_excel, ordernummer, beschrijving, status) 
-//               VALUES (' . $masterData['fk_fma'][$index] . ', "' . $masterData['ordernr'] . '"')'
-// }
+for ($index = 0; $index < count($masterData['fk_fma']); $index++)
+{
+    $query = 'INSERT IGNORE INTO apk_dmu_rapportage (fk_fma_excel, unixdate, ordernummer, beschrijving, status) 
+              VALUES (' . $masterData['fk_fma'][$index] . ', ' . $masterData['date'][$index] . ', "' . $masterData['ordernr'][$index] . '", "",' . 1 . ')';
+    $mysqli->query($query);
+}
+
+// maintenance of database
+// delete all rows where ordernr is empty
+$query = 'DELETE FROM apk_dmu_rapportage WHERE ordernummer = ""';
+$mysqli->query($query);
 
 echo json_encode($masterData);
