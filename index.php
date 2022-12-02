@@ -64,6 +64,7 @@
                             <th>Order nr.</th>
                             <th>Status Excel</th>
                             <th>Status Opvolging</th>
+                            <th>Actie</th>
                         </tr>
                     </thead>
                     <tbody id="table-report-body">

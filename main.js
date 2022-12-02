@@ -25,7 +25,7 @@ $.ajax({ url: 'loadfiles.php', method: 'get' }).then(function(response)
     if (files.apkId.length > 0)
         $('#apkId-dmu-tag').remove();
 
-    globalApkIdFiles = files.apk;
+    globalApkIdFiles = files.apkId;
     files.apkId.forEach(function(file) { $('#apkId-dmu-tagbox').append(`<span class="tag is-primary is-light" style="margin: 0 10px 10px 0;">${ file }</span>`); });
 
     $('#excel-loader').css('display', 'none');
@@ -44,22 +44,23 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
     const data = JSON.parse(response);
     for (let index = 0; index < data.fk_fma.length; index++)
     {
-        console.log(data.date[index]);
+        let status_str = '';
+        let status_color = '';
+        switch (data.status[index])
+        {
+            case '1': status_str = 'NAZIEN'; status_color = 'red'; break;
+            case '2': status_str = 'OPGESTUURD'; status_color = 'orange'; break;
+            case '3': status_str = 'OK'; status_color = 'green'; break;
+        }
+
         $('#table-report-body').append(`
             <tr>
                 <td>${ data.fk_fma[index] }</td>
                 <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
                 <td>${ data.ordernr[index] }</td>
-                <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
-                <td fk-actionstatus="${ data.ordernr[index] }">
-                    <div class="select">
-                        <select>
-                            <option value="1" style="color:red;">NAZIEN</option>
-                            <option value="2" style="color:orange;">VERSTUURD</option>
-                            <option value="3" style="color:green;">OK</option>
-                        </select>
-                    </div>
-                </td>
+                <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;${ data.status[index] == '3' ? 'text-decoration:line-through;color:gray;' : '' }">ONTBREEKT</td>
+                <td fk-actionstatus="${ data.ordernr[index] }" style="color:${ status_color }">${ status_str }</td>
+                <td><button class="button is-info button-orderstatus" fk-buttonstatus="${ data.ordernr[index] }" fk-buttonstatus-status="${ data.status[index] }" fk-buttonstatus-toggle="0">Wijzigen</button></td>
             </tr>
         `);
     }
@@ -68,11 +69,97 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
     $('#report-status').html('');
     $('#report-status').css('visibility', 'hidden');
 
-    // continue analysis
-    analyseApkFiles();
+    // bind the change buttons
+    $('.button').click(function(e) 
+    { 
+        if ($(this).attr('fk-buttonstatus-toggle') == '0')
+        {
+            // change status cell into select
+            const actionselect = `<div class="select"><select fk-selectstatus="${ $(this).attr('fk-buttonstatus') }">
+                <option value="1" ${ $(this).attr('fk-buttonstatus-status') == '1' ? 'selected="selected"' : '' }>NAZIEN</option>
+                <option value="2" ${ $(this).attr('fk-buttonstatus-status') == '2' ? 'selected="selected"' : '' }>OPGESTUURD</option>
+                <option value="3" ${ $(this).attr('fk-buttonstatus-status') == '3' ? 'selected="selected"' : '' }>OK</option>
+            </select></div>`;
+
+            console.log(actionselect);
+
+            $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(actionselect);
+
+            // set check style
+            $(this).html('<i class="fas fa-check"></i>');
+            $(this).attr('fk-buttonstatus-toggle', '1');   
+        }
+        else
+        {
+            // save new status into button
+            const ordernr = $(this).attr('fk-buttonstatus');
+            const newStatus = $(`[fk-selectstatus="${ ordernr }"]`).val();
+            $(this).attr('fk-buttonstatus-status', newStatus);
+            // save to database
+            $.ajax({ url: 'fma_update.php', method: 'post', data: { order: ordernr, status: newStatus } }).then(function(e) { console.log(e); });
+
+            // reset style of select
+            let status_str = '';
+            let status_color = '';
+            switch (newStatus)
+            {
+                case '1': status_str = 'NAZIEN'; status_color = 'red'; break;
+                case '2': status_str = 'OPGESTUURD'; status_color = 'orange'; break;
+                case '3': status_str = 'OK'; status_color = 'green'; break;
+            }
+            $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(status_str);
+            $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).css('color', status_color);
+
+            // reset own style
+            $(this).html('Wijzigen');
+            $(this).attr('fk-buttonstatus-toggle', '0');   
+        }
+    });
+
+    // analyse the ordernrs
+    analyseApkFiles()
 });
 
 // search through apkId files and analyse them
+function analyseSingleApkIdFile(filename)
+{
+    console.log(filename);
+    return new Promise(resolve =>
+    {
+        $('#report-loader').css('visibility', 'visible');
+        $('#report-status').css('visibility', 'visible');
+        $('#report-status').html(`Apk excel: ${ filename } wordt opgehaald en geanalyseerd`);
+        $.ajax({ url: 'apk_id_process.php', method: 'post', data: { apkIdData: filename } }).then(function(response) 
+        { 
+            if (response[0] === '<')
+            {
+                console.log(response);
+                $('#report-status').html(`Error met file '${ filename }, bekijk de logs...' `);    
+                $('#report-status').css('color', 'red');
+            }
+            else
+            {
+                // update front-end
+                const data = JSON.parse(response);
+                data.ordernr.forEach(function(el)
+                {
+                    $(`[fk-orderstatus="${ el }"]`).html('CORRECT');
+                    $(`[fk-orderstatus="${ el }"]`).css('color', 'green');
+                    $(`[fk-actionstatus="${ el }"]`).html('Geen actie nodig');
+                    $(`[fk-actionstatus="${ el }"]`).css('color', 'gray');
+                    $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
+                });
+
+                $('#report-status').html('');
+                $('#report-status').css('visibility', 'hidden');
+            }
+
+            $('#report-loader').css('visibility', 'hidden');
+
+            resolve();
+        });  
+    })
+}
 
 // search through a single apk file and analyse it
 function analyseSingleApkFile(filename)
@@ -92,7 +179,16 @@ function analyseSingleApkFile(filename)
             }
             else
             {
-                
+                // update front-end
+                const data = JSON.parse(response);
+                data.ordernr.forEach(function(el)
+                {
+                    $(`[fk-orderstatus="${ el }"]`).html('CORRECT');
+                    $(`[fk-orderstatus="${ el }"]`).css('color', 'green');
+                    $(`[fk-actionstatus="${ el }"]`).html('Geen actie nodig');
+                    $(`[fk-actionstatus="${ el }"]`).css('color', 'gray');
+                    $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
+                });
 
                 $('#report-status').html('');
                 $('#report-status').css('visibility', 'hidden');
@@ -114,6 +210,10 @@ async function analyseApkFiles()
     }
 
     // continue to analyse apkId files
+    for (let apkIdFile of globalApkIdFiles)
+    {
+        await analyseSingleApkIdFile(apkIdFile);
+    }
 }
 
 // bind click event of report button to execute process script
@@ -125,30 +225,6 @@ $('#button-synchronize-report').click(function(e)
     $.ajax({ url: 'fma_process.php', method: 'post', data: { fmaData: globalFmaFiles } }).then(function(response) 
     { 
         globalFmaDataStdClass = response;
-        
-        // // load fma onto table
-        // const data = JSON.parse(response);
-        // for (let index = 0; index < data.fk_fma.length; index++)
-        // {
-        //     console.log(data.date[index]);
-        //     $('#table-report-body').append(`
-        //         <tr>
-        //             <td>${ data.fk_fma[index] }</td>
-        //             <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
-        //             <td>${ data.ordernr[index] }</td>
-        //             <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
-        //             <td fk-actionstatus="${ data.ordernr[index] }">
-        //                 <div class="select">
-        //                     <select>
-        //                         <option value="1" style="color:red;">NAZIEN</option>
-        //                         <option value="2" style="color:orange;">VERSTUURD</option>
-        //                         <option value="3" style="color:green;">OK</option>
-        //                     </select>
-        //                 </div>
-        //             </td>
-        //         </tr>
-        //     `);
-        // }
 
         $('#report-loader').css('visibility', 'hidden');
         $('#report-status').html('');

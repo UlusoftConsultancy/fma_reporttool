@@ -13,8 +13,8 @@ while ($row = $result->fetch_assoc())
     $masterData['date'][] = $row['unixdate'];
     $masterData['ordernr'][] = $row['ordernummer'];
     $masterData['fk_fma'][] = $row['fk_fma_excel'];
-    $masterData['beschrijving'] = $row['beschrijving'];
-    $masterData['status'] = $row['status'];
+    $masterData['beschrijving'][] = $row['beschrijving'];
+    $masterData['status'][] = $row['status'];
 }
 
 echo json_encode($masterData);
