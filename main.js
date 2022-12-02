@@ -1,7 +1,7 @@
 import * as Lib from './lib.js';
 
 // global error state
-let globalDataStdClass;
+let globalFmaDataStdClass;
 let globalFmaFiles;
 let globalApkFiles;
 let globalApkIdFiles;
@@ -44,7 +44,6 @@ function analyseSingleApkFile(filename)
         $('#report-status').html(`Apk excel: ${ filename } wordt opgehaald en geanalyseerd`);
         $.ajax({ url: 'apk_process.php', method: 'post', data: { apkData: filename } }).then(function(response) 
         { 
-            console.log(response);
             if (response[0] === '<')
             {
                 console.log(response);
@@ -53,6 +52,8 @@ function analyseSingleApkFile(filename)
             }
             else
             {
+                
+
                 $('#report-status').html('');
                 $('#report-status').css('visibility', 'hidden');
             }
@@ -83,16 +84,17 @@ $('#button-generate-report').click(function(e)
     $('#report-status').html('Fma excel wordt opgeladen en geanalyseerd');
     $.ajax({ url: 'fma_process.php', method: 'post', data: { fmaData: globalFmaFiles } }).then(function(response) 
     { 
-        globalDataStdClass = response;
+        globalFmaDataStdClass = response;
         
         // load fma onto table
         const data = JSON.parse(response);
         for (let index = 0; index < data.fk_fma.length; index++)
         {
+            console.log(data.date[index]);
             $('#table-report-body').append(`
                 <tr>
                     <td>${ data.fk_fma[index] }</td>
-                    <td>${ data.date[index] }</td>
+                    <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
                     <td>${ data.ordernr[index] }</td>
                     <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;">ONTBREEKT</td>
                     <td fk-actionstatus="${ data.ordernr[index] }">
@@ -120,16 +122,16 @@ $('#button-generate-report').click(function(e)
 // bind click event of download button to execute report to sheet and download scripts
 $('#button-download-report').click(function()
 {
-    if (!globalErrorState)
-    {
-        $.ajax({ url: 'reportsheet.php', method: 'post', data: { 'data': globalDataStdClass } }).then(function(response) 
-        { 
-            // file is ready for download
-            Lib.download('assets/reports/raport_apk_dmu.xlsx', 'raport_apk_dmu.xlsx');
-        });
-    }
-    else
-    {
-        alert ('Error: zijn alle files geuploaded?');
-    }
+    // if (!globalErrorState)
+    // {
+    //     $.ajax({ url: 'reportsheet.php', method: 'post', data: { 'data': globalDataStdClass } }).then(function(response) 
+    //     { 
+    //         // file is ready for download
+    //         Lib.download('assets/reports/raport_apk_dmu.xlsx', 'raport_apk_dmu.xlsx');
+    //     });
+    // }
+    // else
+    // {
+    //     alert ('Error: zijn alle files geuploaded?');
+    // }
 });

@@ -1,5 +1,7 @@
 <?php
 
+// load db_connection file
+require 'db_connection.php';
 // load fma report and return table
 require 'vendor/autoload.php';
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -8,7 +10,7 @@ $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
 
 $spreadsheet = $reader->load('assets/excels/fma/' . $_POST['fmaData'][0]);
 $worksheet = $spreadsheet->getSheetByName("Alle Prestaties");
-$sheetData = $worksheet->toArray(null, false);
+$sheetData = $worksheet->toArray(null, false, false);
 
 // Get the highest row and column numbers referenced in the worksheet
 $highestRow = $worksheet->getHighestRow(); // e.g. 10
@@ -26,11 +28,21 @@ for ($row = 1; $row <= $highestRow; $row++)
         if ($worksheet->getCellByColumnAndRow($col, $row)->getValue() == 'Datum')
         {
             $masterData['date'] = array_slice(array_column($sheetData, $col - 1), $row);
+            // format date msexcel format to unix format
+            $masterData['date'] = array_map(function($input) { return intval(($input- 25569) * 86400); }, $masterData['date']);
+            // get other columns
             $masterData['ordernr'] = array_slice(array_column($sheetData, $col), $row);
             $masterData['fk_fma'] = range($row + 1, $highestRow);
-            break 2; // exit out of nested loop when found
+            // exit out of nested loop when found
+            break 2; 
         }
     }
 }
+
+// for ($index = 0; $index < count($masterData['fk_fma']); $index++)
+// {
+//     $query = 'INSERT IGNORE INTO apk_dmu_rapportage (fk_fma_excel, ordernummer, beschrijving, status) 
+//               VALUES (' . $masterData['fk_fma'][$index] . ', "' . $masterData['ordernr'] . '"')'
+// }
 
 echo json_encode($masterData);
