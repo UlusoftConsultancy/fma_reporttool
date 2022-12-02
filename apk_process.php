@@ -21,7 +21,7 @@
     {
         for ($col = 1; $col <= $highestColumnIndex; $col++) 
         {
-            if ($worksheet->getCellByColumnAndRow($col, $row)->getValue() == 'Datum terugmelding')
+            if ($worksheet->getCellByColumnAndRow($col, $row)->getValue() == 'Datum  terugmelding')
             {
                 $masterData['date'] = array_slice(array_column($sheetData, $col - 1), $row);
                 $masterData['ordernr'] = array_slice(array_column($sheetData, $col), $row);
