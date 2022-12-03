@@ -41,8 +41,8 @@ for ($row = 1; $row <= $highestRow; $row++)
 
 for ($index = 0; $index < count($masterData['fk_fma']); $index++)
 {
-    $query = 'INSERT IGNORE INTO apk_dmu_rapportage (fk_fma_excel, unixdate, ordernummer, beschrijving, status) 
-              VALUES (' . $masterData['fk_fma'][$index] . ', ' . $masterData['date'][$index] . ', "' . $masterData['ordernr'][$index] . '", "",' . 1 . ')';
+    $query = 'INSERT IGNORE INTO apk_dmu_rapportage (fk_fma_excel, unixdate, ordernummer, status_excel, beschrijving, status) 
+              VALUES (' . $masterData['fk_fma'][$index] . ', ' . $masterData['date'][$index] . ', "' . $masterData['ordernr'][$index] . '", 0, "",' . 1 . ')';
     $mysqli->query($query);
 }
 

@@ -45,7 +45,6 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
     for (let index = 0; index < data.fk_fma.length; index++)
     {
         const statusExcel = data.status_excel[index];
-        console.log(statusExcel);
         let status_str = '';
         let status_color = '';
         let status_excel_text = '';
@@ -74,10 +73,10 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
                 <td>${ data.fk_fma[index] }</td>
                 <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
                 <td>${ data.ordernr[index] }</td>
-                <td fk-orderstatus="${ data.ordernr[index] }" style="color:${ status_excel_color };${ data.status[index] == '3' ? 'text-decoration:line-through;color:gray;' : '' }">${ status_excel_text }</td>
-                <td fk-actionstatus="${ data.ordernr[index] }" style="color:${ status_color }">${ status_str }</td>
-                <td fk-descriptionstatus="${ data.ordernr[index] }" fk-descriptioncontent="${ data.beschrijving[index] }"><p>${ data.beschrijving[index] }</p></td>
-                <td><button class="button is-info button-orderstatus" fk-buttonstatus="${ data.ordernr[index] }" fk-buttonstatus-status="${ data.status[index] }" fk-buttonstatus-toggle="0" style="${ statusExcel == 1 ? 'visibility: hidden;' : '' }">Wijzigen</button></td>
+                <td fk-orderstatus="${ data.ordernr[index] }" fk-orderkey="${ data.fk_fma[index] }" style="color:${ status_excel_color };${ data.status[index] == '3' ? 'text-decoration:line-through;color:gray;' : '' }">${ status_excel_text }</td>
+                <td fk-actionstatus="${ data.ordernr[index] }" fk-actionkey="${ data.fk_fma[index] }" style="color:${ status_color }">${ status_str }</td>
+                <td fk-descriptionstatus="${ data.ordernr[index] }" fk-descriptionkey="${ data.fk_fma[index] }" fk-descriptioncontent="${ data.beschrijving[index] }"><p>${ data.beschrijving[index] }</p></td>
+                <td><button class="button is-info button-orderstatus" fk-buttonkey="${ data.fk_fma[index] }" fk-buttonstatus="${ data.ordernr[index] }" fk-buttonstatus-status="${ data.status[index] }" fk-buttonstatus-toggle="0" style="${ statusExcel == 1 ? 'visibility: hidden;' : '' }">Wijzigen</button></td>
             </tr>
         `);
     }
@@ -92,18 +91,18 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
         if ($(this).attr('fk-buttonstatus-toggle') == '0')
         {
             // change status cell into select
-            const actionselect = `<div class="select"><select fk-selectstatus="${ $(this).attr('fk-buttonstatus') }">
+            const actionselect = `<div class="select"><select fk-selectstatus="${ $(this).attr('fk-buttonkey') }">
                 <option value="1" ${ $(this).attr('fk-buttonstatus-status') == '1' ? 'selected="selected"' : '' }>NAZIEN</option>
                 <option value="2" ${ $(this).attr('fk-buttonstatus-status') == '2' ? 'selected="selected"' : '' }>OPGESTUURD</option>
                 <option value="3" ${ $(this).attr('fk-buttonstatus-status') == '3' ? 'selected="selected"' : '' }>OK</option>
             </select></div>`;
 
             // update select
-            $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(actionselect);
+            $(`[fk-actionkey="${ $(this).attr('fk-buttonkey') }"]`).html(actionselect);
 
             // update textarea
-            const descriptioncontent = $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).attr('fk-descriptioncontent');
-            $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(`<textarea class="textarea" fk-descriptiontextarea="${ $(this).attr('fk-buttonstatus') }">${ descriptioncontent }</textarea>`);
+            const descriptioncontent = $(`[fk-descriptionkey="${ $(this).attr('fk-buttonkey') }"]`).attr('fk-descriptioncontent');
+            $(`[fk-descriptionkey="${ $(this).attr('fk-buttonkey') }"]`).html(`<textarea class="textarea" fk-descriptiontextarea="${ $(this).attr('fk-buttonkey') }">${ descriptioncontent }</textarea>`);
 
             // set check style
             $(this).html('<i class="fas fa-check"></i>');
@@ -112,13 +111,13 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
         else
         {
             // save new status into button
-            const ordernr = $(this).attr('fk-buttonstatus');
-            const newStatus = $(`[fk-selectstatus="${ ordernr }"]`).val();
+            const orderkey = $(this).attr('fk-buttonkey');
+            const newStatus = $(`[fk-selectstatus="${ orderkey }"]`).val();
             $(this).attr('fk-buttonstatus-status', newStatus);
             // cache description
-            const newDescription = $(`[fk-descriptiontextarea="${ $(this).attr('fk-buttonstatus') }"]`).val();
+            const newDescription = $(`[fk-descriptiontextarea="${ $(this).attr('fk-buttonkey') }"]`).val();
             // save to database
-            $.ajax({ url: 'fma_update.php', method: 'post', data: { order: ordernr, status: newStatus, description: newDescription } }).then(function(e) { console.log(e); });
+            $.ajax({ url: 'fma_update.php', method: 'post', data: { fma_key: orderkey, status: newStatus, description: newDescription } });
 
             // reset style of select
             let status_str = '';
@@ -131,12 +130,12 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
             }
 
             // reset status 
-            $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(status_str);
-            $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).css('color', status_color);
+            $(`[fk-actionkey="${ $(this).attr('fk-buttonkey') }"]`).html(status_str);
+            $(`[fk-actionkey="${ $(this).attr('fk-buttonkey') }"]`).css('color', status_color);
 
             // reset description
-            $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).attr('fk-descriptioncontent', newDescription);
-            $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(`<p>${ newDescription }</p>`);
+            $(`[fk-descriptionkey="${ $(this).attr('fk-buttonkey') }"]`).attr('fk-descriptioncontent', newDescription);
+            $(`[fk-descriptionkey="${ $(this).attr('fk-buttonkey') }"]`).html(`<p>${ newDescription }</p>`);
 
             // reset own style
             $(this).html('Wijzigen');
@@ -151,7 +150,6 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
 // search through apkId files and analyse them
 function analyseSingleApkIdFile(filename)
 {
-    console.log(filename);
     return new Promise(resolve =>
     {
         $('#report-loader').css('visibility', 'visible');
@@ -178,7 +176,7 @@ function analyseSingleApkIdFile(filename)
                     $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
 
                     // update database with this info
-                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: el, status_excel: 1 } }).then(function(response) { console.log(response); });
+                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: el, status_excel: 1 } });
                 });
 
                 $('#report-status').html('');
