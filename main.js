@@ -44,24 +44,40 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
     const data = JSON.parse(response);
     for (let index = 0; index < data.fk_fma.length; index++)
     {
+        const statusExcel = data.status_excel[index];
+        console.log(statusExcel);
         let status_str = '';
         let status_color = '';
-        switch (data.status[index])
+        let status_excel_text = '';
+        let status_excel_color = '';
+        if (statusExcel == 1)
         {
-            case '1': status_str = 'NAZIEN'; status_color = 'red'; break;
-            case '2': status_str = 'OPGESTUURD'; status_color = 'orange'; break;
-            case '3': status_str = 'OK'; status_color = 'green'; break;
+            status_str = 'Geen opvolging nodig';
+            status_color = 'gray';
+            status_excel_text = 'CORRECT';
+            status_excel_color = 'green';
         }
+        else
+        {
+            status_excel_text = 'ONTBREEKT';
+            status_excel_color = 'red';
+            switch (data.status[index])
+            {
+                case '1': status_str = 'NAZIEN'; status_color = 'red'; break;
+                case '2': status_str = 'OPGESTUURD'; status_color = 'orange'; break;
+                case '3': status_str = 'OK'; status_color = 'green'; break;
+            }
+        }   
 
         $('#table-report-body').append(`
             <tr>
                 <td>${ data.fk_fma[index] }</td>
                 <td>${ new Date(data.date[index] * 1000).toLocaleDateString('nl-BE') }</td>
                 <td>${ data.ordernr[index] }</td>
-                <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;${ data.status[index] == '3' ? 'text-decoration:line-through;color:gray;' : '' }">ONTBREEKT</td>
+                <td fk-orderstatus="${ data.ordernr[index] }" style="color:${ status_excel_color };${ data.status[index] == '3' ? 'text-decoration:line-through;color:gray;' : '' }">${ status_excel_text }</td>
                 <td fk-actionstatus="${ data.ordernr[index] }" style="color:${ status_color }">${ status_str }</td>
                 <td fk-descriptionstatus="${ data.ordernr[index] }" fk-descriptioncontent="${ data.beschrijving[index] }"><p>${ data.beschrijving[index] }</p></td>
-                <td><button class="button is-info button-orderstatus" fk-buttonstatus="${ data.ordernr[index] }" fk-buttonstatus-status="${ data.status[index] }" fk-buttonstatus-toggle="0">Wijzigen</button></td>
+                <td><button class="button is-info button-orderstatus" fk-buttonstatus="${ data.ordernr[index] }" fk-buttonstatus-status="${ data.status[index] }" fk-buttonstatus-toggle="0" style="${ statusExcel == 1 ? 'visibility: hidden;' : '' }">Wijzigen</button></td>
             </tr>
         `);
     }
@@ -157,9 +173,12 @@ function analyseSingleApkIdFile(filename)
                 {
                     $(`[fk-orderstatus="${ el }"]`).html('CORRECT');
                     $(`[fk-orderstatus="${ el }"]`).css('color', 'green');
-                    $(`[fk-actionstatus="${ el }"]`).html('Geen actie nodig');
+                    $(`[fk-actionstatus="${ el }"]`).html('Geen opvolging nodig');
                     $(`[fk-actionstatus="${ el }"]`).css('color', 'gray');
                     $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
+
+                    // update database with this info
+                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: el, status_excel: 1 } }).then(function(response) { console.log(response); });
                 });
 
                 $('#report-status').html('');
@@ -197,7 +216,7 @@ function analyseSingleApkFile(filename)
                 {
                     $(`[fk-orderstatus="${ el }"]`).html('CORRECT');
                     $(`[fk-orderstatus="${ el }"]`).css('color', 'green');
-                    $(`[fk-actionstatus="${ el }"]`).html('Geen actie nodig');
+                    $(`[fk-actionstatus="${ el }"]`).html('Geen opvolging nodig');
                     $(`[fk-actionstatus="${ el }"]`).css('color', 'gray');
                     $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
                 });
