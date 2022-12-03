@@ -60,6 +60,7 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
                 <td>${ data.ordernr[index] }</td>
                 <td fk-orderstatus="${ data.ordernr[index] }" style="color:red;${ data.status[index] == '3' ? 'text-decoration:line-through;color:gray;' : '' }">ONTBREEKT</td>
                 <td fk-actionstatus="${ data.ordernr[index] }" style="color:${ status_color }">${ status_str }</td>
+                <td fk-descriptionstatus="${ data.ordernr[index] }" fk-descriptioncontent="${ data.beschrijving[index] }"><p>${ data.beschrijving[index] }</p></td>
                 <td><button class="button is-info button-orderstatus" fk-buttonstatus="${ data.ordernr[index] }" fk-buttonstatus-status="${ data.status[index] }" fk-buttonstatus-toggle="0">Wijzigen</button></td>
             </tr>
         `);
@@ -70,7 +71,7 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
     $('#report-status').css('visibility', 'hidden');
 
     // bind the change buttons
-    $('.button').click(function(e) 
+    $('.button-orderstatus').click(function(e) 
     { 
         if ($(this).attr('fk-buttonstatus-toggle') == '0')
         {
@@ -81,9 +82,12 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
                 <option value="3" ${ $(this).attr('fk-buttonstatus-status') == '3' ? 'selected="selected"' : '' }>OK</option>
             </select></div>`;
 
-            console.log(actionselect);
-
+            // update select
             $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(actionselect);
+
+            // update textarea
+            const descriptioncontent = $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).attr('fk-descriptioncontent');
+            $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(`<textarea class="textarea" fk-descriptiontextarea="${ $(this).attr('fk-buttonstatus') }">${ descriptioncontent }</textarea>`);
 
             // set check style
             $(this).html('<i class="fas fa-check"></i>');
@@ -95,8 +99,10 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
             const ordernr = $(this).attr('fk-buttonstatus');
             const newStatus = $(`[fk-selectstatus="${ ordernr }"]`).val();
             $(this).attr('fk-buttonstatus-status', newStatus);
+            // cache description
+            const newDescription = $(`[fk-descriptiontextarea="${ $(this).attr('fk-buttonstatus') }"]`).val();
             // save to database
-            $.ajax({ url: 'fma_update.php', method: 'post', data: { order: ordernr, status: newStatus } }).then(function(e) { console.log(e); });
+            $.ajax({ url: 'fma_update.php', method: 'post', data: { order: ordernr, status: newStatus, description: newDescription } }).then(function(e) { console.log(e); });
 
             // reset style of select
             let status_str = '';
@@ -107,8 +113,14 @@ $.ajax({ url: 'fma_synchronize.php', method: 'get' }).then(function(response)
                 case '2': status_str = 'OPGESTUURD'; status_color = 'orange'; break;
                 case '3': status_str = 'OK'; status_color = 'green'; break;
             }
+
+            // reset status 
             $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(status_str);
             $(`[fk-actionstatus="${ $(this).attr('fk-buttonstatus') }"]`).css('color', status_color);
+
+            // reset description
+            $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).attr('fk-descriptioncontent', newDescription);
+            $(`[fk-descriptionstatus="${ $(this).attr('fk-buttonstatus') }"]`).html(`<p>${ newDescription }</p>`);
 
             // reset own style
             $(this).html('Wijzigen');

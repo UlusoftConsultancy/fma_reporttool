@@ -64,6 +64,7 @@
                             <th>Order nr.</th>
                             <th>Status Excel</th>
                             <th>Status Opvolging</th>
+                            <th>Beschrijving</th>
                             <th>Actie</th>
                         </tr>
                     </thead>
