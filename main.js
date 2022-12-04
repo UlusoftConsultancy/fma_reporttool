@@ -273,9 +273,17 @@ $('#button-synchronize-report').click(function(e)
 // bind click event of download button to execute report to sheet and download scripts
 $('#button-download-report').click(function()
 {
+    $('#report-loader').css('visibility', 'visible');
+    $('#report-status').css('visibility', 'visible');
+    $('#report-status').html('Rapport wordt opgemaakt');
     $.ajax({ url: 'reportsheet.php', method: 'get'}).then(function(response) 
     { 
+        $('#report-status').html('Rapport wordt gedownload');
         // file is ready for download
         Lib.download('assets/reports/raport_apk_dmu.xlsx', 'raport_apk_dmu.xlsx');
+        
+        $('#report-loader').css('visibility', 'hidden');
+        $('#report-status').html('');
+        $('#report-status').css('visibility', 'hidden');
     });
 });
