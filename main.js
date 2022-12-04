@@ -176,7 +176,7 @@ function analyseSingleApkIdFile(filename)
                     $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
 
                     // update database with this info
-                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: data.ordernr[index], status_excel: 1 } });
+                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: el, status_excel: 1 } });
                 });
 
                 $('#report-status').html('');
