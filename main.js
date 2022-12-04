@@ -176,7 +176,7 @@ function analyseSingleApkIdFile(filename)
                     $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
 
                     // update database with this info
-                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: el, status_excel: 1 } });
+                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: data.ordernr[index], status_excel: 1 } });
                 });
 
                 $('#report-status').html('');
@@ -210,17 +210,20 @@ function analyseSingleApkFile(filename)
             {
                 // update front-end
                 const data = JSON.parse(response);
-                data.ordernr.forEach(function(el)
+                for (let index = 0; index < data.ordernr.length; index++)
                 {
-                    $(`[fk-orderstatus="${ el }"]`).html('CORRECT');
-                    $(`[fk-orderstatus="${ el }"]`).css('color', 'green');
-                    $(`[fk-actionstatus="${ el }"]`).html('Geen opvolging nodig');
-                    $(`[fk-actionstatus="${ el }"]`).css('color', 'gray');
-                    $(`[fk-buttonstatus="${ el }"]`).css('visibility', 'hidden');
+                    if (data.teaplus[index] == 'OK')
+                    {
+                        $(`[fk-orderstatus="${ data.ordernr[index] }"]`).html('CORRECT');
+                        $(`[fk-orderstatus="${ data.ordernr[index] }"]`).css('color', 'green');
+                        $(`[fk-actionstatus="${ data.ordernr[index] }"]`).html('Geen opvolging nodig');
+                        $(`[fk-actionstatus="${ data.ordernr[index] }"]`).css('color', 'gray');
+                        $(`[fk-buttonstatus="${ data.ordernr[index] }"]`).css('visibility', 'hidden');
 
-                    // update database with this info
-                    $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: el, status_excel: 1 } });
-                });
+                        // update database with this info
+                        $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: data.ordernr[index], status_excel: 1 } });
+                    }
+                }
 
                 $('#report-status').html('');
                 $('#report-status').css('visibility', 'hidden');
