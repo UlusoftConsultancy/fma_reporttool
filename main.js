@@ -273,16 +273,9 @@ $('#button-synchronize-report').click(function(e)
 // bind click event of download button to execute report to sheet and download scripts
 $('#button-download-report').click(function()
 {
-    // if (!globalErrorState)
-    // {
-    //     $.ajax({ url: 'reportsheet.php', method: 'post', data: { 'data': globalDataStdClass } }).then(function(response) 
-    //     { 
-    //         // file is ready for download
-    //         Lib.download('assets/reports/raport_apk_dmu.xlsx', 'raport_apk_dmu.xlsx');
-    //     });
-    // }
-    // else
-    // {
-    //     alert ('Error: zijn alle files geuploaded?');
-    // }
+    $.ajax({ url: 'reportsheet.php', method: 'get'}).then(function(response) 
+    { 
+        // file is ready for download
+        Lib.download('assets/reports/raport_apk_dmu.xlsx', 'raport_apk_dmu.xlsx');
+    });
 });
