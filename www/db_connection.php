@@ -5,10 +5,15 @@
     // $dbpassword = "909L9TO55S2K3t3qn9b5";
     // $dbname = "ID370587_apkdmu";
 
-    $dbserver = "ulusoft.be.mysql";
-    $dbuser = "ulusoft_be_fma_prestaties";
-    $dbpassword = "GtuSE5EZX3HXsF";
-    $dbname = "ulusoft_be_fma_prestaties";
+    // $dbserver = "ulusoft.be.mysql";
+    // $dbuser = "ulusoft_be_fma_prestaties";
+    // $dbpassword = "GtuSE5EZX3HXsF";
+    // $dbname = "ulusoft_be_fma_prestaties";
+
+    $dbserver = "localhost";
+    $dbuser = "ulusoft";
+    $dbpassword = "ulusoft123456789";
+    $dbname = "fma_prestaties";
 
     // $dbserver = "localhost";
     // $dbuser = "root";
