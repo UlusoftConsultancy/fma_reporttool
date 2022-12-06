@@ -1,3 +1,6 @@
+CREATE DATABASE IF NOT EXISTS fma_prestaties; 
+USE fma_prestaties;
+
 DROP TABLE IF EXISTS `apk_dmu_rapportage`;
 CREATE TABLE IF NOT EXISTS `apk_dmu_rapportage` (
   `id` int(255) NOT NULL AUTO_INCREMENT,

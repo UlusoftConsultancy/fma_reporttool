@@ -198,7 +198,7 @@ function analyseSingleApkFile(filename)
         $('#report-loader').css('visibility', 'visible');
         $('#report-status').css('visibility', 'visible');
         $('#report-status').html(`Apk excel: ${ filename } wordt opgehaald en geanalyseerd`);
-        $.ajax({ url: 'apk_process.php', method: 'post', data: { apkData: filename } }).then(function(response) 
+        $.ajax({ url: 'apk_process.php', method: 'post', data: { apkData: filename } }).then(async function(response) 
         { 
             if (response[0] === '<')
             {
@@ -221,7 +221,8 @@ function analyseSingleApkFile(filename)
                         $(`[fk-buttonstatus="${ data.ordernr[index] }"]`).css('visibility', 'hidden');
 
                         // update database with this info
-                        $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: data.ordernr[index], status_excel: 1 } });
+                        console.log('started apk_update');
+                        await $.ajax({ url: 'apk_update.php', method: 'post', data: { ordernr: data.ordernr[index], status_excel: 1 } }).then(function(response) { console.log('finished apk_update'); });
                     }
                 }
 
