@@ -10,7 +10,7 @@
     // $dbpassword = "GtuSE5EZX3HXsF";
     // $dbname = "ulusoft_be_fma_prestaties";
 
-    $dbserver = "localhost";
+    $dbserver = "db";
     $dbuser = "ulusoft";
     $dbpassword = "ulusoft123456789";
     $dbname = "fma_prestaties";
