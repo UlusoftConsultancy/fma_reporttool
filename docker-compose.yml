@@ -1,17 +1,32 @@
 version: "2"
 services:
     www:
+#        network_mode: bridge
         build: .
-        ports: 
-            - "8001:80"
+#        ports: 
+#           - "80:80"
+#           - "9443:443"
         volumes:
             - ./www:/var/www/html/
         links:
             - db
         networks:
-            - default
+            - proxy2
+        labels:
+            - "traefik.enable=true"
+            - "traefik.docker.network=proxy2"
+            - "traefik.http.routers.fma.entrypoints=http"
+            - "traefik.http.routers.fma.rule=Host(`fma.protocloud.be`)"
+            - "traefik.http.services.fma.loadbalancer.server.port=80"
+            - "traefik.http.middlewares.fma-https-redirect.redirectscheme.scheme=https"
+            - "traefik.http.routers.fma.middlewares=fma-https-redirect"
+            - "traefik.http.routers.fma-secure.entrypoints=https"
+            - "traefik.http.routers.fma-secure.rule=Host(`fma.protocloud.be`)"
+            - "traefik.http.routers.fma-secure.tls=true"
+            - "traefik.http.routers.fma-secure.service=fma"
     db:
-        image: mariadb
+#        network_mode: bridge
+        image: mysql
         ports: 
             - "3306:3306"
         environment:
@@ -21,18 +36,29 @@ services:
             MYSQL_ROOT_PASSWORD: ulusoft123456789
         volumes:
             - ./migrate:/docker-entrypoint-initdb.d
-            - fma_prestaties:/var/lib/mysql
+            - persistent:/var/lib/mysql
         networks:
-            - default
+            - proxy2
+        command: [
+            '--default_authentication_plugin=mysql_native_password',
+            '--character-set-server=utf8mb4',
+            '--collation-server=utf8mb4_unicode_ci'
+        ]
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
         links: 
             - db:db
         ports:
             - 8000:80
+        networks:
+            - proxy2
         environment:
-            MYSQL_USER: fma_prestaties
+            MYSQL_USER: ulusoft
             MYSQL_PASSWORD: ulusoft123456789
             MYSQL_ROOT_PASSWORD: ulusoft123456789
 volumes:
-    fma_prestaties:
+    persistent:
+
+networks:
+    proxy2: 
+        external: true
