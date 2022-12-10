@@ -240,15 +240,21 @@ function analyseSingleApkFile(filename)
 // search through all apk files one by one and update front-end status
 async function analyseApkFiles()
 {
-    for (let apkFile of globalApkFiles)
+    if (globalApkFiles)
     {
-        await analyseSingleApkFile(apkFile);
+        for (let apkFile of globalApkFiles)
+        {
+            await analyseSingleApkFile(apkFile);
+        }
     }
 
-    // continue to analyse apkId files
-    for (let apkIdFile of globalApkIdFiles)
+    if (globalApkIdFiles)
     {
-        await analyseSingleApkIdFile(apkIdFile);
+        // continue to analyse apkId files
+        for (let apkIdFile of globalApkIdFiles)
+        {
+            await analyseSingleApkIdFile(apkIdFile);
+        }
     }
 }
 
@@ -268,7 +274,7 @@ $('#button-synchronize-report').click(function(e)
 
         // continue analysis
         analyseApkFiles();
-    });
+    }).catch(function(response) { console.log(response); });
 });
 
 // bind click event of download button to execute report to sheet and download scripts
